@@ -2,10 +2,21 @@
 <html lang="en">
   <head>
     <title>Client</title>
+    <style>
+      #circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin: 50px auto;
+        background: rgb(212, 138, 0);
+        transition: transform 1s ease-out;
+      }
+    </style>
   </head>
   <body>
     <h1>Virtual Campfire</h1>
     <button id="start">Start campfire session</button>
+    <div id="circle"></div>
     <script src="https://unpkg.com/tone@15/build/Tone.js"></script>
     <script>
       const socket = new WebSocket(`ws://${location.host}/campfire`);
@@ -14,6 +25,8 @@
       const bpm = 100;
       const SCALE = ["C", "D", "E", "G", "A"];
       const OCTAVE = { guitar: 3, piano: 4 };
+
+      const circle = document.getElementById("circle");
 
       socket.onopen = () => {
         console.log("WebSocket connection established - campfire");
@@ -32,6 +45,11 @@
             const pitch = SCALE[noteIndex] + OCTAVE[instrument];
             const time = transport.nextSubdivision("8n");
             synth.triggerAttackRelease(pitch, "8n", time);
+
+            circle.style.transform = "scale(2.5)";
+            setTimeout(() => {
+              circle.style.transform = "scale(1)";
+            }, 100);
           }
         }
       };
@@ -44,7 +62,7 @@
         console.error("WebSocket error:", error);
       };
 
-      let synth,
+      let synths,
         transport = null;
 
       document.getElementById("start").addEventListener("click", async () => {
