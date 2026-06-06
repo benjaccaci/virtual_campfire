@@ -5,13 +5,37 @@
   </head>
   <body>
     <h1>Play music at the campfire!</h1>
-    <button data-note="0">Note 0</button>
-    <button data-note="1">Note 1</button>
-    <button data-note="2">Note 2</button>
-    <button data-note="3">Note 3</button>
-    <button data-note="4">Note 4</button>
+    <h3>Pick an instrument</h3>
+    <button data-instrument="guitar">Guitar</button>
+    <button data-instrument="piano">Piano</button>
+    <h3>Play some notes</h3>
+    <button data-note="0">C</button>
+    <button data-note="1">D</button>
+    <button data-note="2">E</button>
+    <button data-note="3">G</button>
+    <button data-note="4">A</button>
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
+
+      // By default, users start with the guitar
+      let currentInstrument = "guitar";
+      document.querySelectorAll("[data-instrument]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          currentInstrument = btn.dataset.instrument;
+        });
+      });
+
+      document.querySelectorAll("[data-note]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const noteIndex = Number(btn.dataset.note);
+          socket.send(
+            JSON.stringify({
+              address: "/note",
+              args: [currentInstrument, noteIndex],
+            }),
+          );
+        });
+      });
 
       socket.onopen = () => {
         console.log("WebSocket connection established - controller");
@@ -20,9 +44,6 @@
         socket.send(
           JSON.stringify({ address: "/hello", args: ["controller"] }),
         );
-
-        // Choose an instrument (we'll go guitar for now)
-        socket.send(JSON.stringify({ address: "/join", args: ["guitar"] }));
       };
 
       socket.onmessage = (event) => {
@@ -36,15 +57,6 @@
       socket.onerror = (error) => {
         console.error("WebSocket error:", error);
       };
-
-      document.querySelectorAll("button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const noteIndex = Number(btn.dataset.note);
-          socket.send(
-            JSON.stringify({ address: "/note", args: ["guitar", noteIndex] }),
-          );
-        });
-      });
     </script>
   </body>
 </html>

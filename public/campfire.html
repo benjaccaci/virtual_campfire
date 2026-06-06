@@ -9,7 +9,11 @@
     <script src="https://unpkg.com/tone@15/build/Tone.js"></script>
     <script>
       const socket = new WebSocket(`ws://${location.host}/campfire`);
+
+      // Musical constants - starting with defaults, will be experimented with
       const bpm = 100;
+      const SCALE = ["C", "D", "E", "G", "A"];
+      const OCTAVE = { guitar: 3, piano: 4 };
 
       socket.onopen = () => {
         console.log("WebSocket connection established - campfire");
@@ -22,9 +26,12 @@
         console.log("Message from server:", event.data);
         let parsedMsg = JSON.parse(event.data);
         if (parsedMsg.address === "/note") {
+          const [instrument, noteIndex] = parsedMsg.args;
+          const synth = synths[instrument];
           if (synth && transport) {
+            const pitch = SCALE[noteIndex] + OCTAVE[instrument];
             const time = transport.nextSubdivision("8n");
-            synth.triggerAttackRelease(`C4`, "8n", time);
+            synth.triggerAttackRelease(pitch, "8n", time);
           }
         }
       };
@@ -42,7 +49,17 @@
 
       document.getElementById("start").addEventListener("click", async () => {
         await Tone.start();
-        synth = new Tone.Synth().toDestination();
+        // Creating synths for each instrument type - for now just 2 options (guitar and piano)
+        synths = {
+          guitar: new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.005, decay: 0.5, sustain: 0.0, release: 0.3 },
+          }).toDestination(),
+          piano: new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.005, decay: 0.4, sustain: 0.4, release: 1.8 },
+          }).toDestination(),
+        };
         transport = Tone.getTransport();
         transport.bpm.value = bpm;
         transport.start();
