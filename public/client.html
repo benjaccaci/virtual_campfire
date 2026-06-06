@@ -5,6 +5,11 @@
   </head>
   <body>
     <h1>Play music at the campfire!</h1>
+    <button data-note="0">Note 0</button>
+    <button data-note="1">Note 1</button>
+    <button data-note="2">Note 2</button>
+    <button data-note="3">Note 3</button>
+    <button data-note="4">Note 4</button>
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
 
@@ -18,11 +23,6 @@
 
         // Choose an instrument (we'll go guitar for now)
         socket.send(JSON.stringify({ address: "/join", args: ["guitar"] }));
-
-        // With instrument selected, start sending notes
-        socket.send(JSON.stringify({ address: "/note", args: ["C4"] }));
-        socket.send(JSON.stringify({ address: "/note", args: ["B4"] }));
-        socket.send(JSON.stringify({ address: "/note", args: ["D4"] }));
       };
 
       socket.onmessage = (event) => {
@@ -36,6 +36,15 @@
       socket.onerror = (error) => {
         console.error("WebSocket error:", error);
       };
+
+      document.querySelectorAll("button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const noteIndex = Number(btn.dataset.note);
+          socket.send(
+            JSON.stringify({ address: "/note", args: ["guitar", noteIndex] }),
+          );
+        });
+      });
     </script>
   </body>
 </html>

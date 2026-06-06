@@ -5,8 +5,11 @@
   </head>
   <body>
     <h1>Virtual Campfire</h1>
+    <button id="start">Start campfire session</button>
+    <script src="https://unpkg.com/tone@15/build/Tone.js"></script>
     <script>
       const socket = new WebSocket(`ws://${location.host}/campfire`);
+      const bpm = 100;
 
       socket.onopen = () => {
         console.log("WebSocket connection established - campfire");
@@ -17,6 +20,13 @@
 
       socket.onmessage = (event) => {
         console.log("Message from server:", event.data);
+        let parsedMsg = JSON.parse(event.data);
+        if (parsedMsg.address === "/note") {
+          if (synth && transport) {
+            const time = transport.nextSubdivision("8n");
+            synth.triggerAttackRelease(`C4`, "8n", time);
+          }
+        }
       };
 
       socket.onclose = () => {
@@ -26,6 +36,18 @@
       socket.onerror = (error) => {
         console.error("WebSocket error:", error);
       };
+
+      let synth,
+        transport = null;
+
+      document.getElementById("start").addEventListener("click", async () => {
+        await Tone.start();
+        synth = new Tone.Synth().toDestination();
+        transport = Tone.getTransport();
+        transport.bpm.value = bpm;
+        transport.start();
+        console.log("audio ready");
+      });
     </script>
   </body>
 </html>
