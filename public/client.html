@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Client</title>
+  </head>
+  <body>
+    <h1>Play music at the campfire!</h1>
+    <script>
+      const socket = new WebSocket(`ws://${location.host}`);
+
+      socket.onopen = () => {
+        console.log("WebSocket connection established - controller");
+
+        // Send the handshake message
+        socket.send(
+          JSON.stringify({ address: "/hello", args: ["controller"] }),
+        );
+
+        // Choose an instrument (we'll go guitar for now)
+        socket.send(JSON.stringify({ address: "/join", args: ["guitar"] }));
+
+        // With instrument selected, start sending notes
+        socket.send(JSON.stringify({ address: "/note", args: ["C4"] }));
+        socket.send(JSON.stringify({ address: "/note", args: ["B4"] }));
+        socket.send(JSON.stringify({ address: "/note", args: ["D4"] }));
+      };
+
+      socket.onmessage = (event) => {
+        console.log("Message from server:", event.data);
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket connection closed");
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+    </script>
+  </body>
+</html>

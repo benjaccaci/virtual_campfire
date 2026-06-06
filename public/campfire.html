@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Client</title>
+  </head>
+  <body>
+    <h1>Virtual Campfire</h1>
+    <script>
+      const socket = new WebSocket(`ws://${location.host}/campfire`);
+
+      socket.onopen = () => {
+        console.log("WebSocket connection established - campfire");
+
+        // Send the handshake message
+        socket.send(JSON.stringify({ address: "/hello", args: ["campfire"] }));
+      };
+
+      socket.onmessage = (event) => {
+        console.log("Message from server:", event.data);
+      };
+
+      socket.onclose = () => {
+        console.log("WebSocket connection closed");
+      };
+
+      socket.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+    </script>
+  </body>
+</html>
