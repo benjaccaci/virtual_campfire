@@ -2,15 +2,23 @@
 const playBTN = document.getElementById("play-btn")
 
 // midi note for testing
-let midiNote = 60;
+let midiNote = 45;
+
+// string pitch for testing
+let stringPitch = 110;
 
 class GuitarString{
+    fundementalFrequency = new Tone.LowpassCombFilter({
+        delayTime: 1/(stringPitch),
+        resonance: 0.2,
+        dampening: 12000
+    }).toDestination();
 
     delay = new Tone.FeedbackDelay({
         delayTime: 1/(Tone.mtof(midiNote)),
         feedback: 0.9,
         wet: 1
-    }).toDestination();
+    }).connect(this.fundementalFrequency);
 
     noiseFilter = new Tone.Filter({
         frequency: 1600,
