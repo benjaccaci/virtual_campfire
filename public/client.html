@@ -14,8 +14,13 @@
     <button data-note="2">E</button>
     <button data-note="3">G</button>
     <button data-note="4">A</button>
+    <p id="lastkey"></p>
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
+
+      let lastkey = "a";
+
+      document.getElementById("lastkey").innerText = `Last key is: ${lastkey}`;
 
       // By default, users start with the guitar
       let currentInstrument = "guitar";
@@ -35,6 +40,29 @@
             }),
           );
         });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const keyName = event.key;
+        lastkey = keyName;
+        document.getElementById("lastkey").innerText =
+          `Last key is: ${lastkey}`;
+        const noteMap = {
+          a: 0, // C
+          s: 1, // D
+          d: 2, // E
+          g: 3, // G
+          h: 4, // A
+        };
+        if (keyName in noteMap) {
+          const noteIndex = noteMap[keyName];
+          socket.send(
+            JSON.stringify({
+              address: "/note",
+              args: [currentInstrument, noteIndex],
+            }),
+          );
+        }
       });
 
       socket.onopen = () => {
