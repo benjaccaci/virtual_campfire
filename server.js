@@ -21,6 +21,9 @@ const server = http.createServer((req, res) => {
     filePath = "public/client.html";
   } else if (req.url === "/campfire" || req.url === "public/campfire") {
     filePath = "public/campfire.html";
+  } else if (req.url === "/client_styling.css") {
+    // type = "text/css";
+    filePath = "public/client_styling.css";
   } else if (req.url === "/favicon.ico") {
     res.statusCode = 204;
     return res.end();
@@ -34,7 +37,11 @@ const server = http.createServer((req, res) => {
       res.statusCode = 500;
       res.end("Error loading file");
     } else {
-      res.setHeader("Content-Type", "text/html");
+      if (filePath.endsWith(".css")) {
+        res.setHeader("Content-Type", "text/css");
+      } else {
+        res.setHeader("Content-Type", "text/html");
+      }
       res.end(data);
     }
   });

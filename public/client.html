@@ -2,31 +2,46 @@
 <html lang="en">
   <head>
     <title>Client</title>
+    <link rel="stylesheet" href="client_styling.css" />
   </head>
   <body>
     <h1>Play music at the campfire!</h1>
+    <hr />
     <h3>Pick an instrument</h3>
-    <button data-instrument="guitar">Guitar</button>
-    <button data-instrument="piano">Piano</button>
+    <button class="instrument-button" data-instrument="guitar">Guitar</button>
+    <button class="instrument-button" data-instrument="piano">Piano</button>
+    <button class="instrument-button" data-instrument="drums">Drums</button>
+    <button class="instrument-button" data-instrument="flute">Flute</button>
     <h3>Play some notes</h3>
-    <button data-note="0">C</button>
-    <button data-note="1">D</button>
-    <button data-note="2">E</button>
-    <button data-note="3">G</button>
-    <button data-note="4">A</button>
+    <button class="note-button" data-note="0">C</button>
+    <button class="note-button" data-note="1">D</button>
+    <button class="note-button" data-note="2">E</button>
+    <button class="note-button" data-note="3">G</button>
+    <button class="note-button" data-note="4">A</button>
+    <hr />
+    <h3>Info Log:</h3>
+    <p id="current_instrument"></p>
     <p id="lastkey"></p>
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
 
       let lastkey = "a";
+      let current_instrument_tag = "guitar";
 
-      document.getElementById("lastkey").innerText = `Last key is: ${lastkey}`;
+      document.getElementById("current_instrument").innerText =
+        `You are currently playing the: ${current_instrument_tag}`;
+
+      document.getElementById("lastkey").innerText =
+        `Last pressed key: ${lastkey}`;
 
       // By default, users start with the guitar
       let currentInstrument = "guitar";
       document.querySelectorAll("[data-instrument]").forEach((btn) => {
         btn.addEventListener("click", () => {
           currentInstrument = btn.dataset.instrument;
+          current_instrument_tag = currentInstrument;
+          document.getElementById("current_instrument").innerText =
+            `You are currently playing the: ${current_instrument_tag}`;
         });
       });
 
@@ -46,7 +61,7 @@
         const keyName = event.key;
         lastkey = keyName;
         document.getElementById("lastkey").innerText =
-          `Last key is: ${lastkey}`;
+          `Last pressed key: ${lastkey}`;
         const noteMap = {
           a: 0, // C
           s: 1, // D
