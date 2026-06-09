@@ -3,6 +3,14 @@ import fs from "fs";
 import { WebSocketServer } from "ws";
 const PORT = 1250;
 
+// USER INSTRUCTIONS
+// 1. Run this server with `node server.js`
+// 2. Open http://localhost:1250 in a browser tab to connect as a musician (you can open multiple tabs to be multiple musicians)
+// 3. For OTHER machines, use http://<ben-machine-ip>:1250 to connect as a musician
+//    -- If you want multiple machines to connect, ask me!
+// 4. Open http://localhost:1250/campfire in another browser tab to connect as the campfire
+// 5. Press the "Start campfire session" button in the campfire tab, then start playing notes in the musician tab(s)
+
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
 
