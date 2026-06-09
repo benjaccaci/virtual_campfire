@@ -18,17 +18,17 @@ class GuitarString{
         rolloff: -24,
     }).connect(this.delay);
 
-    noiseEnvelope = new Tone.AmplitudeEnvelope({
-        attack: 0.001,
-        decay: 0.054,
-        sustain: 0.0,
-        release: 0.002
-    }).connect(this.noiseFilter);
+    // noiseEnvelope = new Tone.AmplitudeEnvelope({
+    //     attack: 0.001,
+    //     decay: 0.054,
+    //     sustain: 0.0,
+    //     release: 0.002
+    // }).toDestination();
 
     exciter = new Tone.NoiseSynth({
-        envelope: this.noiseEnvelope,
+        // envelope: this.noiseEnvelope,
         noise: "white",
-    }).connect(this.noiseEnvelope);
+    }).connect(this.noiseFilter);
 }
 
 const guitarString_1 = new GuitarString()
@@ -38,7 +38,7 @@ playBTN.addEventListener("click", async () => {
         Tone.start();
     }
     // guitar.toFrequency(midiNote, "midi");
-    guitarString_1.noiseEnvelope.triggerAttackRelease('4n');
+    guitarString_1.exciter.triggerAttackRelease('8n');
 });
 
 
