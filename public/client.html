@@ -25,7 +25,8 @@
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
 
-      let lastkey = "a";
+      // As a default, all musicians start playing the guitar with their last note as C
+      let lastkey = "c";
       let current_instrument_tag = "guitar";
 
       document.getElementById("current_instrument").innerText =
@@ -34,8 +35,9 @@
       document.getElementById("lastkey").innerText =
         `Last pressed key: ${lastkey}`;
 
-      // By default, users start with the guitar
       let currentInstrument = "guitar";
+
+      // For the instrument buttons, event listening for button click that updates the current instrument
       document.querySelectorAll("[data-instrument]").forEach((btn) => {
         btn.addEventListener("click", () => {
           currentInstrument = btn.dataset.instrument;
@@ -45,6 +47,7 @@
         });
       });
 
+      // For the note buttons, event listening for button click that sends the current note (index and instrument) to the server
       document.querySelectorAll("[data-note]").forEach((btn) => {
         btn.addEventListener("click", () => {
           const noteIndex = Number(btn.dataset.note);
@@ -57,6 +60,7 @@
         });
       });
 
+      // Corresponding key event listening (same mapping as the note buttons)
       document.addEventListener("keydown", (event) => {
         const keyName = event.key;
         lastkey = keyName;
@@ -83,12 +87,13 @@
       socket.onopen = () => {
         console.log("WebSocket connection established - controller");
 
-        // Send the handshake message
+        // Send the handshake message to the server
         socket.send(
           JSON.stringify({ address: "/hello", args: ["controller"] }),
         );
       };
 
+      // Logging server messages isn't necessary but helpful for dev
       socket.onmessage = (event) => {
         console.log("Message from server:", event.data);
       };
