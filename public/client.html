@@ -13,11 +13,17 @@
     <button class="instrument-button" data-instrument="drums">Drums</button>
     <button class="instrument-button" data-instrument="flute">Flute</button>
     <h3>Play some notes</h3>
-    <button class="note-button" data-note="0">C</button>
-    <button class="note-button" data-note="1">D</button>
-    <button class="note-button" data-note="2">E</button>
-    <button class="note-button" data-note="3">G</button>
-    <button class="note-button" data-note="4">A</button>
+    <div id="note-buttons">
+      <button class="note-button" data-note="0">C</button>
+      <button class="note-button" data-note="1">D</button>
+      <button class="note-button" data-note="2">E</button>
+      <button class="note-button" data-note="3">G</button>
+      <button class="note-button" data-note="4">A</button>
+    </div>
+    <div id="bongo-buttons" style="display: none">
+      <button class="note-button" data-note="0">Left</button>
+      <button class="note-button" data-note="1">Right</button>
+    </div>
     <hr />
     <h3>Info Log:</h3>
     <p id="current_instrument"></p>
@@ -26,14 +32,15 @@
       const socket = new WebSocket(`ws://${location.host}`);
 
       let lastkey = "c";
+      let lastPlayedNote = "C";
       let currentInstrument = "guitar";
       let octaveOffset = 0;
 
       function updateInfo() {
         document.getElementById("current_instrument").innerText =
-          `You are currently playing the: ${currentInstrument} (octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset})`;
+          `You are currently playing the:   ${currentInstrument} (octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset})`;
         document.getElementById("lastkey").innerText =
-          `Last pressed key: ${lastkey}`;
+          `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
       }
 
       document.body.dataset.instrument = currentInstrument;
@@ -48,6 +55,10 @@
 
       // Helper that plays a note (css flash and message to server)
       function playNote(noteIndex, btn) {
+        lastPlayedNote = ["C", "D", "E", "G", "A"][noteIndex];
+        document.getElementById("lastkey").innerText =
+          `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
+
         flashButton(btn);
         socket.send(
           JSON.stringify({
@@ -61,6 +72,15 @@
       function selectInstrument(instrument) {
         currentInstrument = instrument;
         document.body.dataset.instrument = currentInstrument;
+
+        const isDrums = instrument === "drums";
+        document.getElementById("note-buttons").style.display = isDrums
+          ? "none"
+          : "block";
+        document.getElementById("bongo-buttons").style.display = isDrums
+          ? "block"
+          : "none";
+
         updateInfo();
       }
 
@@ -107,16 +127,17 @@
         updateInfo();
 
         // Note key mapping
-        const noteMap = {
-          a: 0, // C
-          s: 1, // D
-          d: 2, // E
-          g: 3, // G
-          h: 4, // A
-        };
+        const noteMap =
+          currentInstrument === "drums"
+            ? { a: 0, s: 1 }
+            : { a: 0, s: 1, d: 2, g: 3, h: 4 };
         if (keyName in noteMap) {
           const noteIndex = noteMap[keyName];
-          const btn = document.querySelector(`[data-note="${noteIndex}"]`);
+          const container =
+            currentInstrument === "drums" ? "#bongo-buttons" : "#note-buttons";
+          const btn = document.querySelector(
+            `${container} [data-note="${noteIndex}"]`,
+          );
           playNote(noteIndex, btn);
         }
       });

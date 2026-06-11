@@ -2,30 +2,164 @@
 <html lang="en">
   <head>
     <title>Client</title>
-    <style>
-      #circle {
-        width: 200px;
-        height: 200px;
-        border-radius: 50%;
-        margin: 200px auto;
-        background: rgb(212, 138, 0);
-        transition: transform 1s ease-out;
-      }
-    </style>
+    <link rel="stylesheet" href="campfire_styling.css" />
   </head>
   <body>
-    <h1>Virtual Campfire</h1>
+    <h1 style="padding-left: 15px">Virtual Campfire</h1>
     <button id="start">Start campfire session</button>
-    <div id="circle"></div>
+    <div class="stage">
+      <div class="campfire">
+        <div class="sparks">
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+          <div class="spark"></div>
+        </div>
+        <div class="logs">
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+          <div class="log">
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+            <div class="streak"></div>
+          </div>
+        </div>
+        <div class="sticks">
+          <div class="stick"></div>
+          <div class="stick"></div>
+          <div class="stick"></div>
+          <div class="stick"></div>
+        </div>
+        <div class="fire">
+          <div class="fire__red">
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+          </div>
+          <div class="fire__orange">
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+          </div>
+          <div class="fire__yellow">
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+          </div>
+          <div class="fire__white">
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+            <div class="flame"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <script src="https://unpkg.com/tone@15/build/Tone.js"></script>
     <script>
+      // CSS Campfire animation: https://codepen.io/OfigenusMaximus/pen/oNyoORG
+
       const socket = new WebSocket(`ws://${location.host}/campfire`);
 
       const bpm = 100;
       const SCALE = ["C", "D", "E", "G", "A"];
       const OCTAVE = { guitar: 3, piano: 4, flute: 5 };
 
-      const circle = document.getElementById("circle");
+      const fire = document.querySelector(".fire");
 
       socket.onopen = () => {
         console.log("WebSocket connection established - campfire");
@@ -36,18 +170,23 @@
         console.log("Message from server:", event.data);
         let parsedMsg = JSON.parse(event.data);
         if (parsedMsg.address === "/note") {
+          if (!synths || !transport) return;
           const [instrument, noteIndex, octaveOffset = 0] = parsedMsg.args;
           const synth = synths[instrument];
           if (synth && transport) {
-            const pitch =
-              SCALE[noteIndex] + (OCTAVE[instrument] + octaveOffset);
             const time = transport.nextSubdivision("8n");
-            synth.triggerAttackRelease(pitch, "8n", time);
 
-            circle.style.transform = "scale(2.5)";
-            setTimeout(() => {
-              circle.style.transform = "scale(1)";
-            }, 100);
+            if (instrument === "drums") {
+              const bongoPitch = noteIndex === 0 ? "C2" : "G2"; // low (left) vs high (right)
+              synth.triggerAttackRelease(bongoPitch, "8n", time);
+            } else {
+              const pitch =
+                SCALE[noteIndex] + (OCTAVE[instrument] + octaveOffset);
+              synth.triggerAttackRelease(pitch, "8n", time);
+            }
+
+            fire.classList.add("note-hit");
+            setTimeout(() => fire.classList.remove("note-hit"), 80);
           }
         }
       };
@@ -77,6 +216,11 @@
           flute: new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "sine" },
             envelope: { attack: 0.15, decay: 0.1, sustain: 0.9, release: 0.4 },
+          }).toDestination(),
+          drums: new Tone.MembraneSynth({
+            pitchDecay: 0.008,
+            octaves: 1,
+            envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 },
           }).toDestination(),
         };
         transport = Tone.getTransport();
