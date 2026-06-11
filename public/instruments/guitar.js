@@ -54,20 +54,28 @@ const guitar = [guitarStringLowE, guitarStringA, guitarStringD, guitarStringG, g
 chordCmaj = [null, 'C3', 'E3', 'G3', 'C4', 'E5'];
 chordPresets = [chordCmaj];
 
+console.log(guitar[1]);
 
 function Pluck(note, string, strumDelay){
     guitar[string].triggerAttackRelease(note, 1, strumDelay)
 }
 
-function DownStrum(chordPreset, strumSpeed){
+function Strum(chordPreset, strumSpeed, strumDirection){
     for (let string = 0; string < guitar.length; string++){
+        if (strumDirection === 'down'){
+            stringPlay = string;
+        }
+        if (strumDirection === 'up'){
+            stringPlay = guitar.length-string-1;
+        }
         strumTiming = Tone.now()+((strumSpeed/1000)*string);
         chord = chordPresets[chordPreset];
-        note = chord[string];
+        note = chord[stringPlay];
+        console.log(guitar[stringPlay]);
         if (note === null){
         }
         else {
-         Pluck(note, string, strumTiming);
+         Pluck(note, stringPlay, strumTiming);
         }
     }
 }
@@ -76,5 +84,5 @@ playBTN.addEventListener("click", async () => {
 	if (Tone.Context.state !== "running"){
         Tone.start();
     }
-    DownStrum(0, 30);
+    Strum(0, 100, 'up');
 });
