@@ -1,4 +1,6 @@
-const guitarStringLowE = new Tone.Sampler({
+const playBTN = document.getElementById("play-btn")
+
+const guitarString = new Tone.Sampler({
      urls: {
         'A2': "a2.ogg",
         'A#2': "as2.ogg",
@@ -39,3 +41,33 @@ const guitarStringLowE = new Tone.Sampler({
     },
     baseUrl: "/samples/guitar/",
 })
+
+const guitarStringLowE = Object.create(guitarString);
+const guitarStringA = Object.create(guitarString);
+const guitarStringD = Object.create(guitarString);
+const guitarStringG = Object.create(guitarString);
+const guitarStringB = Object.create(guitarString);
+const guitarStringHighE = Object.create(guitarString);
+
+const guitar = [guitarStringLowE, guitarStringA, guitarStringD, guitarStringG, guitarStringB, guitarStringHighE];
+
+chordCmaj = [40, 48, 52, 55, 60, 64];
+chordPresets = [chordCmaj];
+
+
+function Pluck(note, string, strumDelay){
+    guitar[string].triggerAttackRelease(note, 0.5, Tone.now()+strumDelay)
+}
+
+function DownStrum(chordPreset, strumSpeed){
+    for (let string = 0; string < this.allStrings.length; string++){
+        Pluck(chordPresets[chordPreset], string, strumSpeed);
+    }
+}
+
+playBTN.addEventListener("click", async () => {
+	if (Tone.Context.state !== "running"){
+        Tone.start();
+    }
+    guitar.DownStrum(0, 10);
+});
