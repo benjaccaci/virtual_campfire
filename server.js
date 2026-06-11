@@ -27,6 +27,8 @@ const server = http.createServer((req, res) => {
     filePath = "public/campfire_styling.css";
   } else if (req.url.endsWith(".ttf")) {
     filePath = "public" + req.url;
+  } else if (req.url.startsWith("/samples/") && req.url.endsWith(".ogg")) {
+    filePath = "public/instruments" + req.url;
   } else if (req.url === "/favicon.ico") {
     res.statusCode = 204;
     return res.end();
@@ -38,10 +40,13 @@ const server = http.createServer((req, res) => {
   // Open and read that file, then send it to the client
   fs.readFile(filePath, (err, data) => {
     if (err) {
+      console.log("READ FAILED:", filePath, err.code);
       res.statusCode = 500;
       res.end("Error loading file");
     } else {
-      if (filePath.endsWith(".ttf")) {
+      if (filePath.endsWith(".ogg")) {
+        res.setHeader("Content-Type", "audio/ogg");
+      } else if (filePath.endsWith(".ttf")) {
         res.setHeader("Content-Type", "font/ttf");
       } else if (filePath.endsWith(".css")) {
         res.setHeader("Content-Type", "text/css");
