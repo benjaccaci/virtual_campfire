@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <title>Client</title>
+    <link rel="stylesheet" href="campfire_styling.css" />
     <style>
       #circle {
         width: 200px;
@@ -39,10 +40,16 @@
           const [instrument, noteIndex, octaveOffset = 0] = parsedMsg.args;
           const synth = synths[instrument];
           if (synth && transport) {
-            const pitch =
-              SCALE[noteIndex] + (OCTAVE[instrument] + octaveOffset);
             const time = transport.nextSubdivision("8n");
-            synth.triggerAttackRelease(pitch, "8n", time);
+
+            if (instrument === "drums") {
+              const bongoPitch = noteIndex === 0 ? "C2" : "G2"; // low (left) vs high (right)
+              synth.triggerAttackRelease(bongoPitch, "8n", time);
+            } else {
+              const pitch =
+                SCALE[noteIndex] + (OCTAVE[instrument] + octaveOffset);
+              synth.triggerAttackRelease(pitch, "8n", time);
+            }
 
             circle.style.transform = "scale(2.5)";
             setTimeout(() => {
@@ -77,6 +84,11 @@
           flute: new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "sine" },
             envelope: { attack: 0.15, decay: 0.1, sustain: 0.9, release: 0.4 },
+          }).toDestination(),
+          drums: new Tone.MembraneSynth({
+            pitchDecay: 0.008,
+            octaves: 1,
+            envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 },
           }).toDestination(),
         };
         transport = Tone.getTransport();

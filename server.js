@@ -22,8 +22,9 @@ const server = http.createServer((req, res) => {
   } else if (req.url === "/campfire" || req.url === "public/campfire") {
     filePath = "public/campfire.html";
   } else if (req.url === "/client_styling.css") {
-    // type = "text/css";
     filePath = "public/client_styling.css";
+  } else if (req.url === "/campfire_styling.css") {
+    filePath = "public/campfire_styling.css";
   } else if (req.url === "/favicon.ico") {
     res.statusCode = 204;
     return res.end();
