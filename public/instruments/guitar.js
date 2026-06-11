@@ -40,7 +40,7 @@ const guitarString = new Tone.Sampler({
         'G#5': "gs5.ogg",
     },
     baseUrl: "/samples/guitar/",
-})
+}).toDestination()
 
 const guitarStringLowE = Object.create(guitarString);
 const guitarStringA = Object.create(guitarString);
@@ -51,17 +51,20 @@ const guitarStringHighE = Object.create(guitarString);
 
 const guitar = [guitarStringLowE, guitarStringA, guitarStringD, guitarStringG, guitarStringB, guitarStringHighE];
 
-chordCmaj = [40, 48, 52, 55, 60, 64];
+chordCmaj = ['E2', 'C3', 'G3', 'C4', 'G4', 'E5'];
 chordPresets = [chordCmaj];
 
 
 function Pluck(note, string, strumDelay){
-    guitar[string].triggerAttackRelease(note, 0.5, Tone.now()+strumDelay)
+    guitar[string].triggerAttackRelease(note, 0.5, strumDelay)
 }
 
 function DownStrum(chordPreset, strumSpeed){
-    for (let string = 0; string < this.allStrings.length; string++){
-        Pluck(chordPresets[chordPreset], string, strumSpeed);
+    for (let string = 0; string < guitar.length; string++){
+        strumTiming = Tone.now()+((strumSpeed/1000)*string);
+        chord = chordPresets[chordPreset];
+        note = chord[string];
+        Pluck(note, string, strumTiming);
     }
 }
 
@@ -69,5 +72,5 @@ playBTN.addEventListener("click", async () => {
 	if (Tone.Context.state !== "running"){
         Tone.start();
     }
-    guitar.DownStrum(0, 10);
+    DownStrum(0, 10);
 });
