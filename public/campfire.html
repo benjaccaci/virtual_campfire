@@ -151,6 +151,8 @@
     </div>
     <script src="https://unpkg.com/tone@15/build/Tone.js"></script>
     <script>
+      // CSS Campfire animation: https://codepen.io/OfigenusMaximus/pen/oNyoORG
+
       const socket = new WebSocket(`ws://${location.host}/campfire`);
 
       const bpm = 100;
@@ -168,6 +170,7 @@
         console.log("Message from server:", event.data);
         let parsedMsg = JSON.parse(event.data);
         if (parsedMsg.address === "/note") {
+          if (!synths || !transport) return;
           const [instrument, noteIndex, octaveOffset = 0] = parsedMsg.args;
           const synth = synths[instrument];
           if (synth && transport) {
@@ -216,7 +219,7 @@
           }).toDestination(),
           drums: new Tone.MembraneSynth({
             pitchDecay: 0.008,
-            octaves: 10,
+            octaves: 1,
             envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 },
           }).toDestination(),
         };

@@ -32,14 +32,15 @@
       const socket = new WebSocket(`ws://${location.host}`);
 
       let lastkey = "c";
+      let lastPlayedNote = "C";
       let currentInstrument = "guitar";
       let octaveOffset = 0;
 
       function updateInfo() {
         document.getElementById("current_instrument").innerText =
-          `You are currently playing the: ${currentInstrument} (octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset})`;
+          `You are currently playing the:   ${currentInstrument} (octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset})`;
         document.getElementById("lastkey").innerText =
-          `Last pressed key: ${lastkey}`;
+          `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
       }
 
       document.body.dataset.instrument = currentInstrument;
@@ -54,6 +55,10 @@
 
       // Helper that plays a note (css flash and message to server)
       function playNote(noteIndex, btn) {
+        lastPlayedNote = ["C", "D", "E", "G", "A"][noteIndex];
+        document.getElementById("lastkey").innerText =
+          `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
+
         flashButton(btn);
         socket.send(
           JSON.stringify({

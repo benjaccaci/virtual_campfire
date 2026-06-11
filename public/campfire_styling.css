@@ -1,17 +1,27 @@
+@font-face {
+  font-family: "CampfireFont";
+  src: url("resources/CampfireFont/DynaPuff/DynaPuff-VariableFont_wdth,wght.ttf")
+    format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   width: 100%;
   height: 100%;
   margin: 0;
   padding: 0;
   background: radial-gradient(#550d39, #270537);
-  font-family: "Arial", sans-serif;
+  font-family: "CampfireFont", sans-serif;
   font-size: 18px;
   font-weight: normal;
 }
 
 #start {
   margin: 10px;
-  padding: 15px 24px;
+  padding: 15px 20px;
+  font-family: "CampfireFont", sans-serif;
   font-size: 16px;
   color: white;
   background-color: rgb(234, 94, 0);

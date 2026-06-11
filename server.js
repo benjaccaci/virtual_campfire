@@ -25,6 +25,8 @@ const server = http.createServer((req, res) => {
     filePath = "public/client_styling.css";
   } else if (req.url === "/campfire_styling.css") {
     filePath = "public/campfire_styling.css";
+  } else if (req.url.endsWith(".ttf")) {
+    filePath = "public" + req.url;
   } else if (req.url === "/favicon.ico") {
     res.statusCode = 204;
     return res.end();
@@ -39,7 +41,9 @@ const server = http.createServer((req, res) => {
       res.statusCode = 500;
       res.end("Error loading file");
     } else {
-      if (filePath.endsWith(".css")) {
+      if (filePath.endsWith(".ttf")) {
+        res.setHeader("Content-Type", "font/ttf");
+      } else if (filePath.endsWith(".css")) {
         res.setHeader("Content-Type", "text/css");
       } else {
         res.setHeader("Content-Type", "text/html");
