@@ -3,10 +3,11 @@ body {
   font-size: 18px;
   font-weight: normal;
 }
+
 .note-button {
   background-color: rgb(255, 166, 0);
   border: none;
-  color: rgb(113, 64, 0);
+  color: rgb(40, 40, 40);
   padding: 100px 50px;
   text-align: center;
   text-decoration: none;
@@ -14,28 +15,52 @@ body {
   border-radius: 12px;
   font-size: 16px;
   cursor: pointer;
+  transition:
+    background-color 0.2s ease-out,
+    filter 0.2s ease-out,
+    box-shadow 0.2s ease-out;
 }
+
 .note-button:hover {
-  background-color: rgb(255, 166, 0);
-  color: rgb(113, 64, 0);
-  box-shadow: 0px 0px 5px 5px rgba(255, 166, 0, 0.7);
+  filter: brightness(1.08);
+  box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.15);
 }
-.note-button:active {
-  background-color: rgb(163, 106, 0);
-  border: none;
-  color: rgb(113, 64, 0);
-  padding: 100px 50px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
+.note-button.pressed {
+  filter: brightness(0.65);
 }
+
+body[data-instrument="piano"] .note-button {
+  --note-color: rgb(150, 100, 210);
+}
+body[data-instrument="guitar"] .note-button {
+  --note-color: rgb(70, 130, 215);
+}
+body[data-instrument="drums"] .note-button {
+  --note-color: rgb(245, 223, 76);
+}
+body[data-instrument="flute"] .note-button {
+  --note-color: rgb(210, 65, 55);
+}
+
+.note-button[data-note="0"] {
+  background-color: color-mix(in srgb, var(--note-color) 100%, white);
+}
+.note-button[data-note="1"] {
+  background-color: color-mix(in srgb, var(--note-color) 88%, white);
+}
+.note-button[data-note="2"] {
+  background-color: color-mix(in srgb, var(--note-color) 76%, white);
+}
+.note-button[data-note="3"] {
+  background-color: color-mix(in srgb, var(--note-color) 64%, white);
+}
+.note-button[data-note="4"] {
+  background-color: color-mix(in srgb, var(--note-color) 52%, white);
+}
+
 .instrument-button {
-  background-color: rgb(255, 72, 0);
   border: none;
-  color: rgb(216, 216, 216);
+  color: rgb(255, 255, 255);
   padding: 50px 30px;
   text-align: center;
   text-decoration: none;
@@ -43,21 +68,28 @@ body {
   border-radius: 12px;
   font-size: 16px;
   cursor: pointer;
+  transition:
+    background-color 0.2s ease-out,
+    filter 0.2s ease-out,
+    box-shadow 0.2s ease-out;
 }
+.instrument-button[data-instrument="guitar"] {
+  background-color: rgb(195, 70, 0);
+}
+.instrument-button[data-instrument="piano"] {
+  background-color: rgb(225, 88, 0);
+}
+.instrument-button[data-instrument="drums"] {
+  background-color: rgb(255, 110, 0);
+}
+.instrument-button[data-instrument="flute"] {
+  background-color: rgb(255, 140, 0);
+}
+
 .instrument-button:hover {
-  background-color: rgb(255, 72, 0);
-  color: rgb(255, 255, 255);
-  box-shadow: 0px 0px 5px 5px rgba(255, 72, 0);
+  filter: brightness(1.08);
+  box-shadow: 0px 0px 3px 3px rgba(0, 0, 0, 0.15);
 }
 .instrument-button:active {
-  background-color: rgb(175, 51, 2);
-  border: none;
-  color: rgb(255, 255, 255);
-  padding: 50px 30x;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
+  filter: brightness(0.8);
 }

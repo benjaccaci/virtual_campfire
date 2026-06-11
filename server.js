@@ -61,12 +61,11 @@ function broadcastToCampfire(obj) {
 }
 
 wss.on("connection", (ws) => {
+  ws.id = musicianIdCounter++;
   console.log("New client connected");
 
   ws.on("message", (message) => {
     console.log(`Received: ${message}`);
-
-    ws.id = musicianIdCounter++;
 
     let parsedMsg = JSON.parse(message);
 

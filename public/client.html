@@ -25,47 +25,88 @@
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
 
-      // As a default, all musicians start playing the guitar with their last note as C
       let lastkey = "c";
-      let current_instrument_tag = "guitar";
-
-      document.getElementById("current_instrument").innerText =
-        `You are currently playing the: ${current_instrument_tag}`;
-
-      document.getElementById("lastkey").innerText =
-        `Last pressed key: ${lastkey}`;
-
       let currentInstrument = "guitar";
+      let octaveOffset = 0;
 
-      // For the instrument buttons, event listening for button click that updates the current instrument
-      document.querySelectorAll("[data-instrument]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          currentInstrument = btn.dataset.instrument;
-          current_instrument_tag = currentInstrument;
-          document.getElementById("current_instrument").innerText =
-            `You are currently playing the: ${current_instrument_tag}`;
-        });
-      });
-
-      // For the note buttons, event listening for button click that sends the current note (index and instrument) to the server
-      document.querySelectorAll("[data-note]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const noteIndex = Number(btn.dataset.note);
-          socket.send(
-            JSON.stringify({
-              address: "/note",
-              args: [currentInstrument, noteIndex],
-            }),
-          );
-        });
-      });
-
-      // Corresponding key event listening (same mapping as the note buttons)
-      document.addEventListener("keydown", (event) => {
-        const keyName = event.key;
-        lastkey = keyName;
+      function updateInfo() {
+        document.getElementById("current_instrument").innerText =
+          `You are currently playing the: ${currentInstrument} (octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset})`;
         document.getElementById("lastkey").innerText =
           `Last pressed key: ${lastkey}`;
+      }
+
+      document.body.dataset.instrument = currentInstrument;
+      updateInfo();
+
+      // Flash a button dark for 0.2 seconds
+      function flashButton(btn) {
+        if (!btn) return;
+        btn.classList.add("pressed");
+        setTimeout(() => btn.classList.remove("pressed"), 200);
+      }
+
+      // Helper that plays a note (css flash and message to server)
+      function playNote(noteIndex, btn) {
+        flashButton(btn);
+        socket.send(
+          JSON.stringify({
+            address: "/note",
+            args: [currentInstrument, noteIndex, octaveOffset],
+          }),
+        );
+      }
+
+      // Helper that changes the instrument (css update and message to server)
+      function selectInstrument(instrument) {
+        currentInstrument = instrument;
+        document.body.dataset.instrument = currentInstrument;
+        updateInfo();
+      }
+
+      document.querySelectorAll("[data-instrument]").forEach((btn) => {
+        btn.addEventListener("click", () =>
+          selectInstrument(btn.dataset.instrument),
+        );
+      });
+
+      document.querySelectorAll("[data-note]").forEach((btn) => {
+        btn.addEventListener("click", () =>
+          playNote(Number(btn.dataset.note), btn),
+        );
+      });
+
+      document.addEventListener("keydown", (event) => {
+        const keyName = event.key;
+
+        // +/- change the octave offset
+        if (keyName === "+" || keyName === "=") {
+          octaveOffset = Math.min(octaveOffset + 1, 2);
+          updateInfo();
+          return;
+        }
+        if (keyName === "-" || keyName === "_") {
+          octaveOffset = Math.max(octaveOffset - 1, -2);
+          updateInfo();
+          return;
+        }
+
+        // Instrument switching key mapping
+        const instrumentMap = {
+          q: "guitar",
+          w: "piano",
+          e: "drums",
+          r: "flute",
+        };
+        if (keyName in instrumentMap) {
+          selectInstrument(instrumentMap[keyName]);
+          return;
+        }
+
+        lastkey = keyName;
+        updateInfo();
+
+        // Note key mapping
         const noteMap = {
           a: 0, // C
           s: 1, // D
@@ -75,19 +116,13 @@
         };
         if (keyName in noteMap) {
           const noteIndex = noteMap[keyName];
-          socket.send(
-            JSON.stringify({
-              address: "/note",
-              args: [currentInstrument, noteIndex],
-            }),
-          );
+          const btn = document.querySelector(`[data-note="${noteIndex}"]`);
+          playNote(noteIndex, btn);
         }
       });
 
       socket.onopen = () => {
         console.log("WebSocket connection established - controller");
-
-        // Send the handshake message to the server
         socket.send(
           JSON.stringify({ address: "/hello", args: ["controller"] }),
         );

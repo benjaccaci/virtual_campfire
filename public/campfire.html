@@ -4,10 +4,10 @@
     <title>Client</title>
     <style>
       #circle {
-        width: 50px;
-        height: 50px;
+        width: 200px;
+        height: 200px;
         border-radius: 50%;
-        margin: 50px auto;
+        margin: 200px auto;
         background: rgb(212, 138, 0);
         transition: transform 1s ease-out;
       }
@@ -21,36 +21,29 @@
     <script>
       const socket = new WebSocket(`ws://${location.host}/campfire`);
 
-      // Musical constants - starting with defaults, will be experimented with
       const bpm = 100;
       const SCALE = ["C", "D", "E", "G", "A"];
-      const OCTAVE = { guitar: 3, piano: 4 };
+      const OCTAVE = { guitar: 3, piano: 4, flute: 5 };
 
       const circle = document.getElementById("circle");
 
       socket.onopen = () => {
         console.log("WebSocket connection established - campfire");
-
-        // Send the handshake message to the server
         socket.send(JSON.stringify({ address: "/hello", args: ["campfire"] }));
       };
 
-      // When the campfire receives a note message from the server, play the corresponding sound and animation
       socket.onmessage = (event) => {
         console.log("Message from server:", event.data);
         let parsedMsg = JSON.parse(event.data);
         if (parsedMsg.address === "/note") {
-          // Parsing the message to get the note's instrument and index
-          const [instrument, noteIndex] = parsedMsg.args;
+          const [instrument, noteIndex, octaveOffset = 0] = parsedMsg.args;
           const synth = synths[instrument];
           if (synth && transport) {
-            // Calculating the pitch based on index and octave
-            const pitch = SCALE[noteIndex] + OCTAVE[instrument];
-            // Quantizing the note to the nearest 8th note to prevent latency
+            const pitch =
+              SCALE[noteIndex] + (OCTAVE[instrument] + octaveOffset);
             const time = transport.nextSubdivision("8n");
             synth.triggerAttackRelease(pitch, "8n", time);
 
-            // simple CSS animation that 
             circle.style.transform = "scale(2.5)";
             setTimeout(() => {
               circle.style.transform = "scale(1)";
@@ -72,7 +65,6 @@
 
       document.getElementById("start").addEventListener("click", async () => {
         await Tone.start();
-        // Creating synths for each instrument type - for now just 2 options (guitar and piano)
         synths = {
           guitar: new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "triangle" },
@@ -81,6 +73,10 @@
           piano: new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "sine" },
             envelope: { attack: 0.005, decay: 0.4, sustain: 0.4, release: 1.8 },
+          }).toDestination(),
+          flute: new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.15, decay: 0.1, sustain: 0.9, release: 0.4 },
           }).toDestination(),
         };
         transport = Tone.getTransport();
