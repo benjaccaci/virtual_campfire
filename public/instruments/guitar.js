@@ -54,7 +54,7 @@ const guitarStringHighE = Object.create(guitarString);
 // array of all strings
 const guitar = [guitarStringLowE, guitarStringA, guitarStringD, guitarStringG, guitarStringB, guitarStringHighE];
 
-// chord preset - notes in scientific notation from lowest string -> highest string. 
+// chord preset - notes in scientific notation listed from lowest string -> highest string. 
 // strings that do not play in chord are null
 chordCmaj = [null, 'C3', 'E3', 'G3', 'C4', 'E5'];
 chordPresets = [chordCmaj];
@@ -65,19 +65,21 @@ function Pluck(note, string, strumDelay){
 }
 
 // strum function
-// strumSpeed is time between each string playing to create strum effect
+// strumSpeed is time between each string playing to create strum effect (in ms)
 function Strum(chordPreset, strumSpeed, strumDirection){
-    // loop over each string and play note from chord preset in same array position
+    // set chord to play from preset list
+    chord = chordPresets[chordPreset];
+
+    // loop over each string and play note using pluck function from note in chord in same array position
     for (let string = 0; string < guitar.length; string++){
         if (strumDirection === 'down'){
             stringPlay = string;
         }
-        // reverses play order from 0->5 to 5->0 to play from highest to lowest
+        // reverses play order from 0->5 to 5->0 to play from highest string to lowest string
         if (strumDirection === 'up'){
             stringPlay = guitar.length-string-1;
         }
         strumTiming = Tone.now()+((strumSpeed/1000)*string);
-        chord = chordPresets[chordPreset];
         note = chord[stringPlay];
         console.log(guitar[stringPlay]);
         if (note === null){
