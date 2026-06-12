@@ -53,17 +53,17 @@ const banjo = [banjoStringDrone, banjoStringLowD, banjoStringG, banjoStringB, ba
 // chord preset - notes in scientific notation listed from drone string -> high d string. 
 // chord presets are based on open G banjo tuning
 // strings that do not play in chord are null
-chordCmaj = ['G4', 'C3', 'G3', 'C4', 'E4'];
-chordPresets = [chordCmaj];
+bnjoChordCmaj = ['G4', 'C3', 'G3', 'C4', 'E4'];
+bnjoChordPresets = [chordCmaj];
 
 // individual string pluck using triggerAttackRelease
-function Pluck(note, string, strumDelay){
+function BanjoPluck(note, string, strumDelay){
     banjo[string].triggerAttackRelease(note, 1, strumDelay)
 }
 
-function Strum(chordPreset, strumSpeed, strumDirection){
+function BanjoStrum(chordPreset, strumSpeed, strumDirection){
     // set chord to play from preset list
-    chord = chordPresets[chordPreset];
+    chord = bnjoChordPresets[chordPreset];
 
     // loop over each string and play note using pluck function from note in chord in same array position
     for (let string = 0; string < banjo.length; string++){
@@ -76,11 +76,10 @@ function Strum(chordPreset, strumSpeed, strumDirection){
         }
         strumTiming = Tone.now()+((strumSpeed/1000)*string);
         note = chord[stringPlay];
-        console.log(banjo[stringPlay]);
         if (note === null){
         }
         else {
-         Pluck(note, stringPlay, strumTiming);
+         BanjoPluck(note, stringPlay, strumTiming);
         }
     }
 }

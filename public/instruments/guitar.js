@@ -1,4 +1,4 @@
-const playBTN = document.getElementById("play-btn")
+// const playBTN = document.getElementById("play-btn")
 
 // create single guitar string and assign samples from /samples/guitar/ folder
 const guitarString = new Tone.Sampler({
@@ -54,23 +54,28 @@ const guitarStringHighE = Object.create(guitarString);
 // array of all strings
 const guitar = [guitarStringLowE, guitarStringA, guitarStringD, guitarStringG, guitarStringB, guitarStringHighE];
 
-// chord preset - notes in scientific notation listed from lowest string -> highest string. 
+// chord preset - notes in scientific notation listed from lowest string -> highest string. EADGBE
 // strings that do not play in chord are null
-chordCmaj = [null, 'C3', 'E3', 'G3', 'C4', 'E5'];
-chordPresets = [chordCmaj];
+const gtrChordCmaj = [null, 'C3', 'E3', 'G3', 'C4', 'E5'];
+const gtrChordDm = [null, null, 'D3','A3','D4','F4'];
+const gtrChordEm = ['E2', 'B2','E3','G3','B3','E4'];
+const gtrChordFmaj = ['F2','C3','F3','A3','C4','F4'];
+const gtrChordGmaj = ['G2','B2','D3','G3','B3','G4'];
+const gtrChordAm = [null,'A2','E3','A3','C4','E4'];
+gtrChordPresets = [gtrChordCmaj,gtrChordDm,gtrChordEm,gtrChordFmaj,gtrChordGmaj,gtrChordAm];
 
-// individual string pluck using triggerAttackRelease
-function Pluck(note, string, strumDelay){
+// individual string Gtr_Pluck using triggerAttackRelease
+function Gtr_Pluck(note, string, strumDelay){
     guitar[string].triggerAttackRelease(note, 1, strumDelay)
 }
 
 // strum function
 // strumSpeed is time between each string playing to create strum effect (in ms)
-function Strum(chordPreset, strumSpeed, strumDirection){
+function GtrStrum(chordPreset, strumSpeed, strumDirection){
     // set chord to play from preset list
-    chord = chordPresets[chordPreset];
+    chord = gtrChordPresets[chordPreset];
 
-    // loop over each string and play note using pluck function from note in chord in same array position
+    // loop over each string and play note using Gtr_Pluck function from note in chord in same array position
     for (let string = 0; string < guitar.length; string++){
         if (strumDirection === 'down'){
             stringPlay = string;
@@ -81,18 +86,17 @@ function Strum(chordPreset, strumSpeed, strumDirection){
         }
         strumTiming = Tone.now()+((strumSpeed/1000)*string);
         note = chord[stringPlay];
-        console.log(guitar[stringPlay]);
         if (note === null){
         }
         else {
-         Pluck(note, stringPlay, strumTiming);
+         Gtr_Pluck(note, stringPlay, strumTiming);
         }
     }
 }
 
-playBTN.addEventListener("click", async () => {
-	if (Tone.Context.state !== "running"){
-        Tone.start();
-    }
-    Strum(0, 20, 'up');
-});
+// playBTN.addEventListener("click", async () => {
+// 	if (Tone.Context.state !== "running"){
+//         Tone.start();
+//     }
+//     GtrStrum(0, 20, 'down');
+// });
