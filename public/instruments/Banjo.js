@@ -53,14 +53,23 @@ const banjo = [banjoStringDrone, banjoStringLowD, banjoStringG, banjoStringB, ba
 // chord preset - notes in scientific notation listed from drone string -> high d string. 
 // chord presets are based on open G banjo tuning
 // strings that do not play in chord are null
-bnjoChordCmaj = ['G4', 'C3', 'G3', 'C4', 'E4'];
-bnjoChordPresets = [chordCmaj];
+bnjoChordCmaj = ['G4', 'E3', 'G3', 'C4', 'E4'];
+bnjoChordDm = [null,'F3','A3','D4','F4'];
+bnjoChordEm = ['G4','E3','G3','B3','E4'];
+bnjoChordFmaj = [null,'F3','A3','C4','F4'];
+bnjoChordGmaj = ['G4','D3','G3','B3','D4'];
+bnjoChordAm = [null,'E3','A3','C4','E5']
+bnjoChordPresets = [bnjoChordCmaj, bnjoChordDm, bnjoChordEm, bnjoChordFmaj, bnjoChordGmaj, bnjoChordAm];
 
 // individual string pluck using triggerAttackRelease
+// maybe this can be combined with guitar pluck
 function BanjoPluck(note, string, strumDelay){
     banjo[string].triggerAttackRelease(note, 1, strumDelay)
 }
 
+// strum function
+// strumSpeed is time between each string playing to create strum effect (in ms)
+// maybe this can be combined with guitar strum
 function BanjoStrum(chordPreset, strumSpeed, strumDirection){
     // set chord to play from preset list
     chord = bnjoChordPresets[chordPreset];
