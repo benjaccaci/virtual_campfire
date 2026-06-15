@@ -157,7 +157,7 @@
 
       const bpm = 100;
       const SCALE = ["C", "D", "E", "G", "A"];
-      const OCTAVE = { guitar: 3, piano: 4, flute: 5 };
+      const OCTAVE = { guitar: 3, banjo: 4, piano: 4, flute: 5 };
 
       const fire = document.querySelector(".fire");
 
@@ -340,7 +340,7 @@
             octaves: 1,
             envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.1 },
           }).toDestination(),
-          banjoString: new Tone.Sampler({
+          banjo: new Tone.Sampler({
             urls: {
               A3: "a3.ogg",
               "A#3": "as3.ogg",

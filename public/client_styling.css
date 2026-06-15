@@ -47,6 +47,9 @@ body[data-instrument="piano"] .note-button {
 body[data-instrument="guitar"] .note-button {
   --note-color: rgb(70, 130, 215);
 }
+body[data-instrument="banjo"] .note-button {
+  --note-color: rgb(70, 198, 215);
+}
 body[data-instrument="drums"] .note-button {
   --note-color: rgb(245, 223, 76);
 }
@@ -87,6 +90,9 @@ body[data-instrument="flute"] .note-button {
     box-shadow 0.2s ease-out;
 }
 .instrument-button[data-instrument="guitar"] {
+  background-color: rgb(146, 54, 0);
+}
+.instrument-button[data-instrument="banjo"] {
   background-color: rgb(195, 70, 0);
 }
 .instrument-button[data-instrument="piano"] {

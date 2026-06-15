@@ -9,6 +9,7 @@
     <hr />
     <h3>Pick an instrument</h3>
     <button class="instrument-button" data-instrument="guitar">Guitar</button>
+    <button class="instrument-button" data-instrument="banjo">Banjo</button>
     <button class="instrument-button" data-instrument="piano">Piano</button>
     <button class="instrument-button" data-instrument="drums">Drums</button>
     <button class="instrument-button" data-instrument="flute">Flute</button>
@@ -30,7 +31,7 @@
     <p id="lastkey"></p>
     <p>You can play notes with: A S D G H</p>
     <p>You can change octaves with: + / -</p>
-    <p>You can switch instruments with: Q W E R</p>
+    <p>You can switch instruments with: 1 2 3 4 5</p>
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
 
@@ -116,10 +117,11 @@
 
         // Instrument switching key mapping
         const instrumentMap = {
-          q: "guitar",
-          w: "piano",
-          e: "drums",
-          r: "flute",
+          1: "guitar",
+          2: "banjo",
+          3: "piano",
+          4: "drums",
+          5: "flute",
         };
         if (keyName in instrumentMap) {
           selectInstrument(instrumentMap[keyName]);
