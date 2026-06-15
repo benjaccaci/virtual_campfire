@@ -72,6 +72,28 @@ body[data-instrument="flute"] .note-button {
 .note-button[data-note="4"] {
   background-color: color-mix(in srgb, var(--note-color) 52%, white);
 }
+#sharp-buttons {
+  margin-bottom: 6px;
+}
+.note-button.sharp {
+  padding: 45px 50px;
+  color: rgba(255, 255, 255, 0.92);
+}
+.note-button.sharp[data-note="0"] {
+  background-color: color-mix(in srgb, var(--note-color) 60%, black);
+}
+.note-button.sharp[data-note="1"] {
+  background-color: color-mix(in srgb, var(--note-color) 55%, black);
+}
+.note-button.sharp[data-note="2"] {
+  background-color: color-mix(in srgb, var(--note-color) 50%, black);
+}
+.note-button.sharp[data-note="3"] {
+  background-color: color-mix(in srgb, var(--note-color) 45%, black);
+}
+.note-button.sharp[data-note="4"] {
+  background-color: color-mix(in srgb, var(--note-color) 40%, black);
+}
 
 .instrument-button {
   border: none;

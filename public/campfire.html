@@ -157,6 +157,7 @@
 
       const bpm = 100;
       const SCALE = ["C", "D", "E", "G", "A"];
+      const SHARP_SCALE = ["C#", "D#", "F", "G#", "A#"];
       const OCTAVE = { guitar: 3, banjo: 4, piano: 4, flute: 5 };
 
       const fire = document.querySelector(".fire");
@@ -171,7 +172,8 @@
         let parsedMsg = JSON.parse(event.data);
         if (parsedMsg.address === "/note") {
           if (!synths || !transport) return;
-          const [instrument, noteIndex, octaveOffset = 0] = parsedMsg.args;
+          const [instrument, noteIndex, octaveOffset = 0, sharp = false] =
+            parsedMsg.args;
           const synth = synths[instrument];
           if (synth && transport) {
             const time = transport.nextSubdivision("8n");
@@ -180,8 +182,8 @@
               const bongoPitch = noteIndex === 0 ? "C2" : "G2"; // low (left) vs high (right)
               synth.triggerAttackRelease(bongoPitch, "8n", time);
             } else {
-              const pitch =
-                SCALE[noteIndex] + (OCTAVE[instrument] + octaveOffset);
+              const noteName = (sharp ? SHARP_SCALE : SCALE)[noteIndex];
+              const pitch = noteName + (OCTAVE[instrument] + octaveOffset);
               synth.triggerAttackRelease(pitch, "8n", time);
             }
 

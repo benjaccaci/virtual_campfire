@@ -14,6 +14,23 @@
     <button class="instrument-button" data-instrument="drums">Drums</button>
     <button class="instrument-button" data-instrument="flute">Flute</button>
     <h3>Play some notes</h3>
+    <div id="sharp-buttons">
+      <button class="note-button sharp" data-note="0" data-sharp="true">
+        C#
+      </button>
+      <button class="note-button sharp" data-note="1" data-sharp="true">
+        D#
+      </button>
+      <button class="note-button sharp" data-note="2" data-sharp="true">
+        E#
+      </button>
+      <button class="note-button sharp" data-note="3" data-sharp="true">
+        G#
+      </button>
+      <button class="note-button sharp" data-note="4" data-sharp="true">
+        A#
+      </button>
+    </div>
     <div id="note-buttons">
       <button class="note-button" data-note="0">C</button>
       <button class="note-button" data-note="1">D</button>
@@ -29,7 +46,8 @@
     <h3>Info Log:</h3>
     <p id="current_instrument"></p>
     <p id="lastkey"></p>
-    <p>You can play notes with: A S D G H</p>
+    <p>You can play base notes with: A S D G H</p>
+    <p>You can play sharp notes with: Q W E R T</p>
     <p>You can change octaves with: + / -</p>
     <p>You can switch instruments with: 1 2 3 4 5</p>
     <script>
@@ -58,8 +76,10 @@
       }
 
       // Helper that plays a note (css flash and message to server)
-      function playNote(noteIndex, btn) {
-        lastPlayedNote = ["C", "D", "E", "G", "A"][noteIndex];
+      function playNote(noteIndex, btn, sharp = false) {
+        const naturalNames = ["C", "D", "E", "G", "A"];
+        const sharpNames = ["C#", "D#", "E#", "G#", "A#"];
+        lastPlayedNote = (sharp ? sharpNames : naturalNames)[noteIndex];
         document.getElementById("lastkey").innerText =
           `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
 
@@ -67,7 +87,7 @@
         socket.send(
           JSON.stringify({
             address: "/note",
-            args: [currentInstrument, noteIndex, octaveOffset],
+            args: [currentInstrument, noteIndex, octaveOffset, sharp],
           }),
         );
       }
@@ -79,6 +99,9 @@
 
         const isDrums = instrument === "drums";
         document.getElementById("note-buttons").style.display = isDrums
+          ? "none"
+          : "block";
+        document.getElementById("sharp-buttons").style.display = isDrums
           ? "none"
           : "block";
         document.getElementById("bongo-buttons").style.display = isDrums
@@ -96,7 +119,7 @@
 
       document.querySelectorAll("[data-note]").forEach((btn) => {
         btn.addEventListener("click", () =>
-          playNote(Number(btn.dataset.note), btn),
+          playNote(Number(btn.dataset.note), btn, btn.dataset.sharp === "true"),
         );
       });
 
@@ -131,7 +154,7 @@
         lastkey = keyName;
         updateInfo();
 
-        // Note key mapping
+        // Note key mapping for base notes
         const noteMap =
           currentInstrument === "drums"
             ? { a: 0, s: 1 }
@@ -144,6 +167,17 @@
             `${container} [data-note="${noteIndex}"]`,
           );
           playNote(noteIndex, btn);
+        }
+        // Note key mapping for sharps
+        if (currentInstrument !== "drums") {
+          const sharpMap = { q: 0, w: 1, e: 2, r: 3, t: 4 };
+          if (keyName in sharpMap) {
+            const noteIndex = sharpMap[keyName];
+            const btn = document.querySelector(
+              `#sharp-buttons [data-note="${noteIndex}"]`,
+            );
+            playNote(noteIndex, btn, true);
+          }
         }
       });
 
