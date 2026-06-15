@@ -6,28 +6,30 @@ const spriteWidth = 135;
 const spriteHeight = 135;
 
 // on sprite sheet column is orientation, row is animation frame
-let gtrAnimationSequence = [];
+let drumAnimationSequence = [];
 
+// set drum spritesheet image
+let drumSpriteSheet = new Image();
+drumSpriteSheet.src = '/sprites/duck_sprite_sheet.png';
 
-// set guitar spritesheet image
-let gtrSpriteSheet = new Image();
-gtrSpriteSheet.src = '/sprites/gator_sprite_sheet.png';
-
-// gtrSpriteSheet.onload = function() {
-//     gtrAnimation(0, 'down')
+// drumSpriteSheet.onload = function() {
+//     drumAnimation(5, 'right')
 // };
 
-// set guitar spritesheet row sequence and start animation
-function gtrAnimation(orientation, direction){
-    if (direction === 'up'){
-        gtrAnimationSequence = [1,0];
+function drumAnimation(orientation, direction){
+    if (direction === 'left'){
+        drumAnimationSequence = [0,1,0];
     }
-    else if (direction === 'down'){
-        gtrAnimationSequence = [0,1];
+    else if (direction === 'right'){
+        drumAnimationSequence = [0,2,0];
     }
-    animation(gtrSpriteSheet, orientation, gtrAnimationSequence);
+    else if (direction === 'both'){
+        drumAnimationSequence = [0,3,0];
+    }
+    animation(drumSpriteSheet, orientation, drumAnimationSequence);
 }
 
+// same animation function as in guitar
 function animation (image, orientation, sequence){
     // fps and frame counter
     let fps = 12;
