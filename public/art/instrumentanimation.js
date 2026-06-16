@@ -2,6 +2,7 @@
 const spriteWidth = 135; 
 const spriteHeight = 135;
 
+// on sprite sheet column is orientation, row is animation frame
 var animationSequence = {
     guitar: [],
     piano: [],
@@ -18,12 +19,14 @@ var spriteSheet = {
     banjo: new Image(),
 }
 
+// set spritesheet image
 spriteSheet.guitar.src = '/sprites/gator_sprite_sheet.png';
 spriteSheet.piano.src = '';
 spriteSheet.drum.src = '/sprites/duck_sprite_sheet.png';
 spriteSheet.flute.src = '';
 spriteSheet.banjo.src = '';
 
+// sets up animaton sequence depending on instrument before starting animation
 function startAnimation(instrument, direction, orientation){
     switch(instrument){
         case 'guitar':
