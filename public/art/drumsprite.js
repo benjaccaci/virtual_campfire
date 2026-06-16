@@ -1,9 +1,9 @@
-var canvas = document.querySelector('canvas');
-var context = canvas.getContext('2d');
+var drumCanvas =  document.getElementById("topright");
+var drumContext = drumCanvas.getContext('2d');
 
 // each sprite in sheet is 135x135 images
-const spriteWidth = 135; 
-const spriteHeight = 135;
+// const spriteWidth = 135; 
+// const spriteHeight = 135;
 
 // on sprite sheet column is orientation, row is animation frame
 let drumAnimationSequence = [];
@@ -12,9 +12,9 @@ let drumAnimationSequence = [];
 let drumSpriteSheet = new Image();
 drumSpriteSheet.src = '/sprites/duck_sprite_sheet.png';
 
-// drumSpriteSheet.onload = function() {
-//     drumAnimation(5, 'right')
-// };
+drumSpriteSheet.onload = function() {
+    drumAnimation(1, 'right')
+};
 
 function drumAnimation(orientation, direction){
     if (direction === 'left'){
@@ -26,11 +26,11 @@ function drumAnimation(orientation, direction){
     else if (direction === 'both'){
         drumAnimationSequence = [0,3,0];
     }
-    animation(drumSpriteSheet, orientation, drumAnimationSequence);
+    drumanimation(drumSpriteSheet, orientation, drumAnimationSequence);
 }
 
 // same animation function as in guitar
-function animation (image, orientation, sequence){
+function drumaAimation (image, orientation, sequence){
     // fps and frame counter
     let fps = 12;
     let frame = 0;
@@ -51,8 +51,8 @@ function animation (image, orientation, sequence){
         frameDelta = timestamp-lastframe;
         if (frameDelta > 1000/fps){
             lastframe = timestamp;
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            context.drawImage(
+            drumContext.clearRect(0, 0, drumCanvas.width, drumCanvas.height);
+            drumContext.drawImage(
                 image, // image
                 spriteWidth*orientation, // sx - character orientation, 45 degree steps
                 spriteHeight*sequence[frame], // sy - character start frame, up or down
