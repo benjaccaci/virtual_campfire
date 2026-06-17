@@ -3,6 +3,132 @@
   <head>
     <title>Client</title>
     <link rel="stylesheet" href="client_styling.css" />
+    <style>
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      .controls-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        color: #fff;
+        background-color: rgb(195, 70, 0);
+        padding: 14px 22px;
+        border-radius: 12px;
+        font-family: "CampfireFont", sans-serif;
+        font-size: 16px;
+        cursor: pointer;
+        transition:
+          filter 0.2s ease-out,
+          box-shadow 0.2s ease-out;
+      }
+      .controls-button:hover {
+        filter: brightness(1.08);
+        box-shadow: 0 0 3px 3px rgba(0, 0, 0, 0.15);
+      }
+      .controls-button svg {
+        width: 20px;
+        height: 20px;
+      }
+      .octave-indicator {
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.85);
+        background: rgba(0, 0, 0, 0.2);
+        padding: 8px 16px;
+        border-radius: 999px;
+      }
+
+      .controls-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(20, 2, 20, 0.6);
+      }
+      .controls-overlay[hidden] {
+        display: none;
+      }
+      .controls-modal {
+        position: relative;
+        width: min(560px, 100%);
+        max-height: 85vh;
+        overflow-y: auto;
+        padding: 30px 32px 26px;
+        border-radius: 18px;
+        border: 1px solid rgba(255, 166, 0, 0.35);
+        background: radial-gradient(120% 120% at 50% 0%, #6a1145, #34073f);
+        box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5);
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .controls-modal h2 {
+        margin: 0 0 20px;
+        font-size: 26px;
+      }
+      .controls-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        font-size: 22px;
+        line-height: 1;
+        cursor: pointer;
+        transition: background 0.2s ease-out;
+      }
+      .controls-close:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+      .controls-group {
+        margin-bottom: 18px;
+      }
+      .controls-group h4 {
+        margin: 0 0 10px;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: rgb(255, 166, 0);
+      }
+      .key-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 18px;
+      }
+      .key-map {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+      }
+      .controls-modal kbd {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.6em;
+        padding: 6px 9px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.25);
+        background: #f3e9d6;
+        color: #2a2a2a;
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+        font-family: "CampfireFont", sans-serif;
+        font-size: 14px;
+      }
+      .controls-note {
+        margin: 10px 0 0;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.65);
+      }
+    </style>
   </head>
   <body>
     <h1>Play music at the campfire!</h1>
@@ -43,30 +169,112 @@
       <button class="note-button" data-note="1">Right</button>
     </div>
     <hr />
-    <h3>Info Log:</h3>
-    <p id="current_instrument"></p>
-    <p id="lastkey"></p>
-    <p>You can play base notes with: A S D G H</p>
-    <p>You can play sharp notes with: Q W E R T</p>
-    <p>You can change octaves with: + / -</p>
-    <p>You can switch instruments with: 1 2 3 4 5</p>
+    <div class="status-bar">
+      <button
+        id="controls-button"
+        class="controls-button"
+        aria-haspopup="dialog"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <rect x="2.5" y="6" width="19" height="12" rx="2" />
+          <line x1="6" y1="10" x2="6" y2="10" />
+          <line x1="10" y1="10" x2="10" y2="10" />
+          <line x1="14" y1="10" x2="14" y2="10" />
+          <line x1="18" y1="10" x2="18" y2="10" />
+          <line x1="8" y1="14" x2="16" y2="14" />
+        </svg>
+        Controls
+      </button>
+      <span id="octave-indicator" class="octave-indicator">Octave +0</span>
+    </div>
+
+    <div
+      id="controls-overlay"
+      class="controls-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="controls-title"
+      hidden
+    >
+      <div class="controls-modal">
+        <button
+          id="controls-close"
+          class="controls-close"
+          aria-label="Close controls"
+        >
+          &times;
+        </button>
+        <h2 id="controls-title">Controls</h2>
+
+        <section class="controls-group">
+          <h4>Base notes</h4>
+          <div class="key-row">
+            <span class="key-map"><kbd>A</kbd> C</span>
+            <span class="key-map"><kbd>S</kbd> D</span>
+            <span class="key-map"><kbd>D</kbd> E</span>
+            <span class="key-map"><kbd>G</kbd> G</span>
+            <span class="key-map"><kbd>H</kbd> A</span>
+          </div>
+        </section>
+
+        <section class="controls-group">
+          <h4>Sharp notes</h4>
+          <div class="key-row">
+            <span class="key-map"><kbd>W</kbd> C#</span>
+            <span class="key-map"><kbd>E</kbd> D#</span>
+            <span class="key-map"><kbd>T</kbd> E#</span>
+            <span class="key-map"><kbd>Y</kbd> G#</span>
+            <span class="key-map"><kbd>U</kbd> A#</span>
+          </div>
+        </section>
+
+        <section class="controls-group">
+          <h4>Switch instruments</h4>
+          <div class="key-row">
+            <span class="key-map"><kbd>1</kbd> Guitar</span>
+            <span class="key-map"><kbd>2</kbd> Banjo</span>
+            <span class="key-map"><kbd>3</kbd> Piano</span>
+            <span class="key-map"><kbd>4</kbd> Drums</span>
+            <span class="key-map"><kbd>5</kbd> Flute</span>
+          </div>
+        </section>
+
+        <section class="controls-group">
+          <h4>Change octave</h4>
+          <div class="key-row">
+            <span class="key-map"><kbd>+</kbd> Raise octave</span>
+            <span class="key-map"><kbd>&minus;</kbd> Lower octave</span>
+          </div>
+        </section>
+
+        <p class="controls-note">
+          Tip: with Drums selected, <kbd>F</kbd> and <kbd>J</kbd> play the two
+          bongos.
+        </p>
+      </div>
+    </div>
+
     <script>
       const socket = new WebSocket(`ws://${location.host}`);
 
-      let lastkey = "c";
-      let lastPlayedNote = "C";
       let currentInstrument = "guitar";
       let octaveOffset = 0;
 
-      function updateInfo() {
-        document.getElementById("current_instrument").innerText =
-          `You are currently playing the:   ${currentInstrument} (octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset})`;
-        document.getElementById("lastkey").innerText =
-          `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
+      function updateOctave() {
+        document.getElementById("octave-indicator").innerText =
+          `Octave ${octaveOffset >= 0 ? "+" : ""}${octaveOffset}`;
       }
 
       document.body.dataset.instrument = currentInstrument;
-      updateInfo();
+      updateOctave();
 
       // Flash a button dark for 0.2 seconds
       function flashButton(btn) {
@@ -77,12 +285,6 @@
 
       // Helper that plays a note (css flash and message to server)
       function playNote(noteIndex, btn, sharp = false) {
-        const naturalNames = ["C", "D", "E", "G", "A"];
-        const sharpNames = ["C#", "D#", "E#", "G#", "A#"];
-        lastPlayedNote = (sharp ? sharpNames : naturalNames)[noteIndex];
-        document.getElementById("lastkey").innerText =
-          `Last pressed key: ${lastkey}   |     Last played note: ${lastPlayedNote}`;
-
         flashButton(btn);
         socket.send(
           JSON.stringify({
@@ -107,8 +309,6 @@
         document.getElementById("bongo-buttons").style.display = isDrums
           ? "block"
           : "none";
-
-        updateInfo();
       }
 
       document.querySelectorAll("[data-instrument]").forEach((btn) => {
@@ -123,18 +323,44 @@
         );
       });
 
+      const controlsButton = document.getElementById("controls-button");
+      const controlsOverlay = document.getElementById("controls-overlay");
+      const controlsClose = document.getElementById("controls-close");
+
+      function openControls() {
+        controlsOverlay.hidden = false;
+        controlsClose.focus();
+      }
+      function closeControls() {
+        controlsOverlay.hidden = true;
+        controlsButton.focus();
+      }
+
+      controlsButton.addEventListener("click", openControls);
+      controlsClose.addEventListener("click", closeControls);
+      controlsOverlay.addEventListener("click", (event) => {
+        // Click on the dark backdrop (but not the modal itself) closes it
+        if (event.target === controlsOverlay) closeControls();
+      });
+
       document.addEventListener("keydown", (event) => {
         const keyName = event.key;
+
+        // While the controls popup is open, swallow keys so nothing plays
+        if (!controlsOverlay.hidden) {
+          if (keyName === "Escape") closeControls();
+          return;
+        }
 
         // +/- change the octave offset
         if (keyName === "+" || keyName === "=") {
           octaveOffset = Math.min(octaveOffset + 1, 2);
-          updateInfo();
+          updateOctave();
           return;
         }
         if (keyName === "-" || keyName === "_") {
           octaveOffset = Math.max(octaveOffset - 1, -2);
-          updateInfo();
+          updateOctave();
           return;
         }
 
@@ -151,13 +377,10 @@
           return;
         }
 
-        lastkey = keyName;
-        updateInfo();
-
         // Note key mapping for base notes
         const noteMap =
           currentInstrument === "drums"
-            ? { a: 0, s: 1 }
+            ? { f: 0, j: 1 }
             : { a: 0, s: 1, d: 2, g: 3, h: 4 };
         if (keyName in noteMap) {
           const noteIndex = noteMap[keyName];
@@ -170,7 +393,7 @@
         }
         // Note key mapping for sharps
         if (currentInstrument !== "drums") {
-          const sharpMap = { q: 0, w: 1, e: 2, r: 3, t: 4 };
+          const sharpMap = { w: 0, e: 1, t: 2, y: 3, u: 4 };
           if (keyName in sharpMap) {
             const noteIndex = sharpMap[keyName];
             const btn = document.querySelector(
