@@ -95,6 +95,11 @@ body[data-instrument="flute"] .note-button {
   background-color: color-mix(in srgb, var(--note-color) 40%, black);
 }
 
+.instrument-icon {
+  width: 50px;
+  height: 50px;
+  display: block;
+}
 .instrument-button {
   border: none;
   color: rgb(255, 255, 255);
