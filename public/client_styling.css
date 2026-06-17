@@ -76,7 +76,7 @@ body[data-instrument="flute"] .note-button {
   margin-bottom: 6px;
 }
 .note-button.sharp {
-  padding: 45px 50px;
+  padding: 45px 44.5px;
   color: rgba(255, 255, 255, 0.92);
 }
 .note-button.sharp[data-note="0"] {
