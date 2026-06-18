@@ -21,7 +21,7 @@ var spriteSheet = {
 
 // set spritesheet image
 spriteSheet.guitar.src = '/sprites/gator_sprite_sheet.png';
-spriteSheet.piano.src = '';
+spriteSheet.piano.src = '/sprites/cat_sprite_sheet.png';
 spriteSheet.drum.src = '/sprites/duck_sprite_sheet.png';
 spriteSheet.flute.src = '';
 spriteSheet.banjo.src = '';
@@ -39,7 +39,7 @@ function startAnimation(instrument, direction, orientation){
             animation(spriteSheet.guitar, animationSequence.guitar, orientation);
             break;
         case 'piano':
-
+            animationSequence.piano = [0];
             break;
         case 'drum':
             if (direction === 'left'){
